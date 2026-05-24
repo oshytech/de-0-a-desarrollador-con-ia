@@ -1,0 +1,31 @@
+# Dependencias y compilados
+node_modules/
+dist/
+build/
+.gradle/
+.kotlin/
+bin/
+*.exe
+*.test
+*.out
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# Pruebas e informes
+coverage/
+test-results/
+playwright-report/
+
+# Entorno local: nunca se sube
+.env
+.env.local
+local.properties
+.idea/
+*.iml
+.DS_Store
