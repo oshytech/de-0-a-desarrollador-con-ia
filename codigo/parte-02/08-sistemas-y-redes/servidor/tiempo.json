@@ -1,0 +1,6 @@
+{
+  "ciudad": "Zaragoza",
+  "temperatura": 14.5,
+  "lluvia": false,
+  "proximos_dias": [16, 18, 12]
+}
