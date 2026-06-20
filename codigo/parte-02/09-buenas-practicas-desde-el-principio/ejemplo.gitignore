@@ -1,0 +1,12 @@
+# Entorno virtual: se recrea con requirements.txt
+.venv/
+
+# Ficheros que genera Python al ejecutar
+__pycache__/
+*.pyc
+
+# Secretos y configuración local: nunca al repositorio
+.env
+
+# Datos que genera el programa al usarse
+*.log
