@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+# Los gastos son datos personales de quien usa el programa
+cuentas.json
