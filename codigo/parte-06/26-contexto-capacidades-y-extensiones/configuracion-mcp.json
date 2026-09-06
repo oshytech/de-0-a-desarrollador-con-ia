@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "club": {
+      "command": "python",
+      "args": ["-I", "/ruta/absoluta/a/servidor_mcp_club.py"],
+      "env": {
+        "CLUB_MCP_ESCRITURA": "0"
+      }
+    }
+  }
+}

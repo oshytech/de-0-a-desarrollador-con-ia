@@ -1,0 +1,18 @@
+{
+  "socios": [
+    {"id": "S1", "nombre": "Lucía Ortega", "correo": "lucia@example.com", "activo": true},
+    {"id": "S2", "nombre": "Marcos Gil", "correo": "marcos@example.com", "activo": true},
+    {"id": "S3", "nombre": "Elena Ruiz", "correo": "elena@example.com", "activo": false}
+  ],
+  "pistas": [
+    {"id": "P1", "nombre": "Tenis 1", "deporte": "tenis"},
+    {"id": "P2", "nombre": "Pádel 1", "deporte": "padel"},
+    {"id": "P3", "nombre": "Pádel 2", "deporte": "padel"}
+  ],
+  "reservas": [
+    {"id": "R1", "socio": "S1", "pista": "P2", "inicio": "2026-12-01T18:00", "estado": "confirmada"},
+    {"id": "R2", "socio": "S2", "pista": "P2", "inicio": "2026-12-02T19:00", "estado": "confirmada"},
+    {"id": "R3", "socio": "S1", "pista": "P1", "inicio": "2026-12-03T09:00", "estado": "confirmada"},
+    {"id": "R4", "socio": "S2", "pista": "P3", "inicio": "2026-12-01T18:00", "estado": "cancelada"}
+  ]
+}
