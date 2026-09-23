@@ -1,0 +1,11 @@
+# Alternativa con el framework pre-commit (https://pre-commit.com),
+# que sirve para cualquier lenguaje: pre-commit install
+repos:
+  - repo: local
+    hooks:
+      - id: puerta-calidad
+        name: puerta de calidad
+        entry: sh scripts/puerta-calidad.sh
+        language: system
+        pass_filenames: false
+        always_run: true
