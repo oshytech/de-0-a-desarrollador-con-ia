@@ -1,0 +1,21 @@
+diff --git a/internal/aplicacion/cancelar.go b/internal/aplicacion/cancelar.go
+index ed395cb..cf152ec 100644
+--- a/internal/aplicacion/cancelar.go
++++ b/internal/aplicacion/cancelar.go
+@@ -20,3 +20,16 @@ type CancelarReserva struct {
+ 	Reservas RepositorioReservas
+ 	Reloj    Reloj
+ }
++
++// Ejecutar cancela la reserva de un socio.
++func (c CancelarReserva) Ejecutar(socioID, reservaID string) error {
++	r, err := c.Reservas.Buscar(reservaID)
++	if err != nil {
++		return err
++	}
++	if err := dominio.PuedeCancelar(r, time.Now()); err != nil {
++		return err
++	}
++	r.Estado = dominio.Cancelada
++	return c.Reservas.Guardar(r)
++}
