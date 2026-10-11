@@ -1,0 +1,12 @@
+{
+  "name": "reservas-ojos-para-los-agentes",
+  "private": true,
+  "scripts": {
+    "start": "node servidor.mjs",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.65.1",
+    "@types/node": "24.10.1"
+  }
+}

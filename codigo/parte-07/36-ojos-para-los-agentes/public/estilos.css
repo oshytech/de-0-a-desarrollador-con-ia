@@ -1,0 +1,65 @@
+:root {
+  --texto: #1f2328;
+  --suave: #57606a;
+  --acento: #0a4ea2;
+  --error: #b42318;
+  --exito: #1a7f37;
+  --borde: #8c959f;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 16px;
+  color: var(--texto);
+  background: #ffffff;
+}
+
+main {
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+}
+
+h1 { font-size: 1.6rem; margin: 0 0 0.5rem; }
+h2 { font-size: 1.2rem; margin-top: 2rem; }
+
+.ayuda { color: var(--suave); margin: 0.25rem 0 0; }
+
+.campo { margin-top: 1rem; }
+
+label { display: block; font-weight: 600; margin-bottom: 0.25rem; }
+
+input, select, button { font-family: inherit; }
+
+input, select {
+  box-sizing: border-box;
+  width: 100%;
+  font-size: 16px;
+  padding: 0.5rem;
+  border: 1px solid var(--borde);
+  border-radius: 4px;
+}
+
+input[aria-invalid="true"] { border: 2px solid var(--error); }
+
+button {
+  margin-top: 1.5rem;
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  background: var(--acento);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:disabled { opacity: 0.7; cursor: progress; }
+
+/* Nunca quitar el foco sin poner otro a cambio. */
+:focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
+
+.error { color: var(--error); margin: 0.25rem 0 0; }
+.exito { color: var(--exito); font-weight: 600; }

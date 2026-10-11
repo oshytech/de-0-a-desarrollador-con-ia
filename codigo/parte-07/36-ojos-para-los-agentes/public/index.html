@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reservar pista · Club de barrio</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <main>
+    <h1>Reservar pista</h1>
+    <p class="ayuda">Las reservas duran una hora. Puedes reservar desde hoy hasta dentro de 14 días.</p>
+
+    <form id="form-reserva" novalidate>
+      <div class="campo">
+        <label for="correo">Correo de socio</label>
+        <input id="correo" name="correo" type="email" autocomplete="email"
+               placeholder="nombre@ejemplo.com" aria-describedby="error-correo" required>
+        <p id="error-correo" class="error" hidden></p>
+      </div>
+
+      <div class="campo">
+        <label for="pista">Pista</label>
+        <select id="pista" name="pista">
+          <option value="tenis-1">Tenis 1</option>
+          <option value="tenis-2">Tenis 2</option>
+          <option value="padel-1">Pádel 1</option>
+        </select>
+      </div>
+
+      <div class="campo">
+        <label for="dia">Día</label>
+        <input id="dia" name="dia" type="date" aria-describedby="error-dia" required>
+        <p id="error-dia" class="error" hidden></p>
+      </div>
+
+      <div class="campo">
+        <label for="hora">Hora de inicio</label>
+        <select id="hora" name="hora" aria-describedby="ayuda-hora"></select>
+        <p id="ayuda-hora" class="ayuda">La última reserva empieza a las 21:00.</p>
+      </div>
+
+      <button type="submit">Reservar pista</button>
+    </form>
+
+    <div id="resultado" aria-live="polite"></div>
+
+    <h2>Tus reservas</h2>
+    <ul id="reservas"></ul>
+    <p id="sin-reservas" class="ayuda">Todavía no tienes reservas. Elige pista, día y hora arriba.</p>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
