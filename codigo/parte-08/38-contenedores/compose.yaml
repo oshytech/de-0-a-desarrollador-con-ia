@@ -1,0 +1,37 @@
+# Entorno de desarrollo: PostgreSQL, las migraciones y la API.
+# docker compose up --build
+services:
+  bd:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${CLUB_BD_USUARIO:-club}
+      POSTGRES_PASSWORD: ${CLUB_BD_CLAVE:-solo-para-desarrollo}
+      POSTGRES_DB: ${CLUB_BD_NOMBRE:-club}
+    volumes:
+      - datos-club:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 2s
+      retries: 15
+
+  migrar:
+    build: .
+    command: ["-migrar"]
+    environment:
+      RESERVAS_BD: postgres://${CLUB_BD_USUARIO:-club}:${CLUB_BD_CLAVE:-solo-para-desarrollo}@bd:5432/${CLUB_BD_NOMBRE:-club}?sslmode=disable
+    depends_on:
+      bd:
+        condition: service_healthy
+
+  api:
+    build: .
+    environment:
+      RESERVAS_BD: postgres://${CLUB_BD_USUARIO:-club}:${CLUB_BD_CLAVE:-solo-para-desarrollo}@bd:5432/${CLUB_BD_NOMBRE:-club}?sslmode=disable
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      migrar:
+        condition: service_completed_successfully
+
+volumes:
+  datos-club:

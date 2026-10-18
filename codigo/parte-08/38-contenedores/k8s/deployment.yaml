@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reservas-api
+  labels:
+    app: reservas-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: reservas-api
+  template:
+    metadata:
+      labels:
+        app: reservas-api
+    spec:
+      securityContext:
+        runAsNonRoot: true
+      # Antes de arrancar la API se aplican las migraciones. Si fallan,
+      # el pod nuevo no arranca y siguen atendiendo los de la versión anterior.
+      initContainers:
+        - name: migrar
+          image: ghcr.io/ejemplo/reservas-api:1.4.0
+          args: ["-migrar"]
+          env:
+            - name: RESERVAS_BD
+              valueFrom:
+                secretKeyRef:
+                  name: reservas-bd
+                  key: url
+      containers:
+        - name: api
+          image: ghcr.io/ejemplo/reservas-api:1.4.0
+          ports:
+            - containerPort: 8080
+          env:
+            - name: RESERVAS_BD
+              valueFrom:
+                secretKeyRef:
+                  name: reservas-bd
+                  key: url
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+          # ¿Sigue vivo el proceso? Si falla varias veces seguidas, se reinicia.
+          livenessProbe:
+            httpGet:
+              path: /vivo
+              port: 8080
+            periodSeconds: 10
+            failureThreshold: 3
+          # ¿Puede recibir tráfico? Si falla, se le deja de enviar, sin reiniciarlo.
+          readinessProbe:
+            httpGet:
+              path: /listo
+              port: 8080
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
