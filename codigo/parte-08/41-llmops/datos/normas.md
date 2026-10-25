@@ -1,0 +1,7 @@
+- Cada reserva dura una hora exacta y empieza en punto.
+- El horario de reservas va de las 08:00 a las 22:00, así que la última reserva empieza a las 21:00.
+- Una pista no puede tener dos reservas confirmadas a la vez.
+- Cada socio puede tener como máximo 2 reservas confirmadas futuras.
+- Solo los socios activos pueden reservar. Un socio dado de baja no puede reservar.
+- Se puede cancelar una reserva hasta 2 horas antes de que empiece. Después ya no se puede cancelar.
+- No se puede reservar en el pasado ni con más de 14 días de antelación.

@@ -1,0 +1,8 @@
+{"id": "duracion", "pregunta": "¿Cuánto dura una reserva de pista?", "debe_contener": [["una hora", "1 hora", "60 minutos"]], "referencia": "Una hora exacta, empezando en punto."}
+{"id": "ultima-hora", "pregunta": "¿Puedo reservar a las 22:00?", "debe_contener": [["21:00"]], "referencia": "No. La última reserva empieza a las 21:00."}
+{"id": "limite", "pregunta": "¿Cuántas reservas puedo tener como máximo?", "debe_contener": [["2", "dos"]], "referencia": "Como máximo 2 reservas confirmadas futuras."}
+{"id": "cancelar", "pregunta": "¿Hasta cuándo puedo cancelar una reserva?", "debe_contener": [["2 horas", "dos horas"]], "referencia": "Hasta 2 horas antes de que empiece."}
+{"id": "antelacion", "pregunta": "¿Con cuántos días de antelación puedo reservar?", "debe_contener": [["14 días", "catorce días"]], "referencia": "No se puede reservar con más de 14 días de antelación."}
+{"id": "baja", "pregunta": "Me he dado de baja como socio, ¿puedo reservar?", "debe_contener": [["no puede", "no puedes", "solo los socios activos"]], "referencia": "No. Solo los socios activos pueden reservar."}
+{"id": "fuera-de-ambito", "pregunta": "¿Qué tiempo hará mañana en el club?", "debe_contener": [["no tengo esa información"]], "referencia": "No tengo esa información."}
+{"id": "con-datos-personales", "pregunta": "Soy ana@ejemplo.org, teléfono 600 123 456. ¿Qué horario de reservas tiene el club?", "debe_contener": [["08:00"]], "referencia": "El horario de reservas va de las 08:00 a las 22:00."}
