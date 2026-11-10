@@ -1,0 +1,290 @@
+openapi: 3.1.0
+info:
+  title: API de reservas del club
+  version: 1.0.0
+  description: |
+    Reservas de pistas de tenis y pádel de un club deportivo de barrio.
+
+    Reglas del club:
+    1. Las reservas duran una hora exacta y empiezan en punto, entre las 08:00 y las 22:00
+       (la última empieza a las 21:00), en hora del club.
+    2. Una pista no puede tener dos reservas confirmadas que se solapen.
+    3. Un socio no puede tener más de 2 reservas confirmadas futuras.
+    4. Solo los socios activos pueden reservar.
+    5. Se puede cancelar hasta 2 horas antes del inicio. Después, no.
+    6. No se reserva en el pasado ni con más de 14 días de antelación.
+
+    Identidad: el socio que hace la petición llega en la cabecera X-Socio-Id.
+    En este proyecto es una simplificación. En producción la escribe un
+    middleware que valida un token, y nunca se lee del cuerpo de la petición.
+    Las consultas de pistas y horas libres son públicas y no la necesitan.
+servers:
+  - url: http://127.0.0.1:8080
+paths:
+  /reservas:
+    post:
+      summary: Reservar una pista
+      operationId: reservarPista
+      parameters:
+        - $ref: "#/components/parameters/SocioId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SolicitudReserva"
+            example:
+              pista_id: p-1
+              inicio: "2026-12-02T10:00"
+      responses:
+        "201":
+          description: Reserva confirmada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Reserva"
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "404":
+          description: El socio o la pista no existen (no_encontrado)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: La pista ya está ocupada a esa hora (pista_ocupada)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: |
+            La reserva incumple una regla del club: fuera_de_horario (1),
+            limite_de_reservas (3), socio_inactivo (4) o fuera_de_plazo (6).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /reservas/{id}/cancelacion:
+    post:
+      summary: Cancelar una reserva propia
+      description: |
+        La reserva no se borra: pasa a estado cancelada y deja libre la pista.
+        Si es de otro socio, la respuesta es la misma que si no existiera (404),
+        para no confirmar qué identificadores son válidos.
+      operationId: cancelarReserva
+      parameters:
+        - $ref: "#/components/parameters/SocioId"
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Reserva cancelada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Reserva"
+        "401":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "409":
+          description: La reserva ya estaba cancelada (reserva_ya_cancelada)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Quedan menos de 2 horas para el inicio (cancelacion_fuera_de_plazo, regla 5)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /socios/{id}/reservas:
+    get:
+      summary: Listar las próximas reservas de un socio
+      description: Solo el propio socio puede ver sus reservas.
+      operationId: listarReservasDeSocio
+      parameters:
+        - $ref: "#/components/parameters/SocioId"
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Reservas que todavía no han empezado, ordenadas por inicio
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Reserva"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+  /pistas:
+    get:
+      summary: Listar las pistas del club
+      operationId: listarPistas
+      responses:
+        "200":
+          description: Todas las pistas, ordenadas por id
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Pista"
+              example:
+                - id: p-1
+                  nombre: Pista 1
+                  deporte: tenis
+                - id: p-2
+                  nombre: Pista 2
+                  deporte: padel
+  /pistas/{id}/disponibilidad:
+    get:
+      summary: Consultar las horas libres de una pista un día
+      description: |
+        Devuelve las horas de inicio que se podrían reservar ahora mismo en esa
+        pista y ese día, en hora del club: entre las 08:00 y las 21:00 (regla 1),
+        sin las ocupadas por una reserva confirmada (regla 2) y sin las que ya han
+        empezado o caen a más de 14 días (regla 6). Un día pasado o fuera de plazo
+        no es un error: responde con la lista vacía.
+      operationId: consultarDisponibilidad
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fecha
+          in: query
+          required: true
+          description: Día en hora del club, en formato AAAA-MM-DD
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Horas libres de ese día, en orden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Disponibilidad"
+              example:
+                fecha: "2026-12-02"
+                horas_libres: ["08:00", "09:00", "11:00"]
+        "400":
+          description: Falta la fecha o no tiene el formato AAAA-MM-DD (peticion_no_valida)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: La pista no existe (no_encontrado)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  parameters:
+    SocioId:
+      name: X-Socio-Id
+      in: header
+      required: true
+      schema:
+        type: string
+  responses:
+    Error:
+      description: Error con un código estable y un mensaje legible
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+  schemas:
+    SolicitudReserva:
+      type: object
+      additionalProperties: false
+      required: [pista_id, inicio]
+      properties:
+        pista_id:
+          type: string
+        inicio:
+          type: string
+          description: Hora local del club, sin zona horaria, en formato AAAA-MM-DDTHH:MM
+          pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}$"
+    Reserva:
+      type: object
+      required: [id, socio_id, pista_id, inicio, fin, estado]
+      properties:
+        id:
+          type: string
+        socio_id:
+          type: string
+        pista_id:
+          type: string
+        inicio:
+          type: string
+          format: date-time
+        fin:
+          type: string
+          format: date-time
+        estado:
+          type: string
+          enum: [confirmada, cancelada]
+    Pista:
+      type: object
+      required: [id, nombre, deporte]
+      properties:
+        id:
+          type: string
+        nombre:
+          type: string
+        deporte:
+          type: string
+          enum: [tenis, padel]
+    Disponibilidad:
+      type: object
+      required: [fecha, horas_libres]
+      properties:
+        fecha:
+          type: string
+          format: date
+        horas_libres:
+          type: array
+          description: Horas de inicio en hora del club, en formato HH:MM
+          items:
+            type: string
+            pattern: "^\\d{2}:00$"
+    Error:
+      type: object
+      required: [error, mensaje]
+      properties:
+        error:
+          type: string
+          enum:
+            - peticion_no_valida
+            - no_autenticado
+            - prohibido
+            - no_encontrado
+            - fuera_de_horario
+            - socio_inactivo
+            - fuera_de_plazo
+            - limite_de_reservas
+            - pista_ocupada
+            - cancelacion_fuera_de_plazo
+            - reserva_ya_cancelada
+            - error_interno
+        mensaje:
+          type: string
