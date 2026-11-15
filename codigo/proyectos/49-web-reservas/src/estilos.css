@@ -1,0 +1,98 @@
+:root {
+  --texto: #1d1d1f;
+  --fondo: #ffffff;
+  --acento: #0b5cad;
+  --ok: #1b6e2f;
+  --error: #a4161a;
+  font-family: system-ui, sans-serif;
+  color: var(--texto);
+  background: var(--fondo);
+  line-height: 1.5;
+}
+
+body {
+  margin: 0 auto;
+  max-width: 44rem;
+  padding: 1rem;
+}
+
+header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-weight: 600;
+}
+
+select,
+input,
+button {
+  font: inherit;
+  min-height: 2.75rem; /* objetivo táctil cómodo en el móvil */
+}
+
+.campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem;
+}
+
+.horas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+}
+
+.horas button {
+  width: 100%;
+  border: 2px solid var(--acento);
+  border-radius: 0.5rem;
+  background: var(--fondo);
+  color: var(--acento);
+  cursor: pointer;
+}
+
+.horas button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+button:focus-visible,
+select:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--acento);
+  outline-offset: 2px;
+}
+
+.reservas {
+  list-style: none;
+  padding: 0;
+}
+
+.reservas li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.aviso-ok {
+  color: var(--ok);
+  font-weight: 600;
+}
+
+.aviso-error {
+  color: var(--error);
+  font-weight: 600;
+}
