@@ -1,0 +1,11 @@
+.gradle/
+.kotlin/
+build/
+local.properties
+.idea/
+*.iml
+
+# Proyecto de Xcode: se genera con XcodeGen desde iosApp/project.yml
+iosApp/*.xcodeproj/
+iosApp/iosApp/Info.plist
+xcuserdata/
