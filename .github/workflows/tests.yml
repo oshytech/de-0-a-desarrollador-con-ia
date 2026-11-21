@@ -1,0 +1,78 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.27"
+      - name: go vet y go test en cada módulo
+        run: |
+          set -e
+          for mod in $(find codigo -name go.mod -not -path '*/node_modules/*'); do
+            dir=$(dirname "$mod")
+            echo "::group::$dir"
+            # El capítulo 7 enseña un error de tipos: este módulo tiene que fallar al compilar.
+            if [ "$dir" = "codigo/parte-02/07-lenguajes-de-programacion/tipos_go" ]; then
+              if (cd "$dir" && go build ./... 2>/dev/null); then echo "debería fallar al compilar"; exit 1; fi
+              echo "::endgroup::"
+              continue
+            fi
+            (cd "$dir" && go vet ./... && go test ./...)
+            echo "::endgroup::"
+          done
+
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: unittest en cada carpeta con tests
+        run: |
+          set -e
+          for dir in $(find codigo -name 'test_*.py' -not -path '*/node_modules/*' -exec dirname {} \; | sort -u); do
+            echo "::group::$dir"
+            if [ "$(basename "$dir")" = "tests" ]; then
+              (cd "$(dirname "$dir")" && python -m unittest discover -s tests -t . -v)
+            else
+              (cd "$dir" && python -m unittest discover -v)
+            fi
+            echo "::endgroup::"
+          done
+
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: codigo/proyectos/49-web-reservas
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "26"
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+
+  app-movil:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: codigo/proyectos/50-app-movil
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - run: chmod +x gradlew
+      - run: ./gradlew :shared:jvmTest --no-daemon
